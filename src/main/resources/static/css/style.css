@@ -1,0 +1,472 @@
+/* ===================================================================
+   Campus Placement Management System - Modern Design System
+   Primary: Indigo (#4f46e5) | Font: Inter | SB Admin 2 Modern Style
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-light: #eef2ff;
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #06b6d4;
+    --purple-color: #8b5cf6;
+    --placed-color: #047857;
+
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-sidebar: #1e1b4b;
+    --sidebar-text: #cbd5e1;
+    --sidebar-active-bg: rgba(255, 255, 255, 0.12);
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+    --sidebar-width: 260px;
+    --navbar-height: 70px;
+}
+
+[data-bs-theme="dark"] {
+    --bg-body: #0b0f19;
+    --bg-card: #151c2e;
+    --bg-sidebar: #0d1222;
+    --sidebar-text: #94a3b8;
+    --sidebar-active-bg: rgba(79, 70, 229, 0.25);
+    --border-color: #1e293b;
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary-light: rgba(79, 70, 229, 0.15);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    min-height: 100vh;
+    letter-spacing: -0.01em;
+}
+
+/* -------------------------------------------------------------------
+   Layout Components (SB Admin 2 modern style)
+   ------------------------------------------------------------------- */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar */
+.app-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    color: var(--sidebar-text);
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1030;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand {
+    height: var(--navbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-brand i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+    color: #818cf8;
+}
+
+.sidebar-nav {
+    padding: 1rem 0;
+    list-style: none;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.sidebar-heading {
+    padding: 0.75rem 1.5rem 0.35rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.nav-link-custom {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.nav-link-custom i {
+    font-size: 1.15rem;
+    margin-right: 0.85rem;
+    width: 24px;
+    text-align: center;
+}
+
+.nav-link-custom:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link-custom.active {
+    color: #ffffff;
+    background-color: var(--sidebar-active-bg);
+    border-left-color: #818cf8;
+    font-weight: 600;
+}
+
+/* Main Content Area */
+.app-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--bg-body);
+}
+
+/* Top Navbar */
+.app-navbar {
+    height: var(--navbar-height);
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.navbar-page-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.app-content {
+    padding: 1.75rem;
+    flex-grow: 1;
+}
+
+.app-footer {
+    padding: 1rem 1.75rem;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* -------------------------------------------------------------------
+   Card & Metric Components
+   ------------------------------------------------------------------- */
+.custom-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.custom-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card-header-clean {
+    padding: 1.25rem 1.5rem;
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header-clean h5 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+}
+
+.stat-card {
+    border-radius: 1rem;
+    padding: 1.35rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon.primary { background-color: var(--primary-light); color: var(--primary-color); }
+.stat-icon.success { background-color: rgba(16, 185, 129, 0.12); color: var(--success-color); }
+.stat-icon.warning { background-color: rgba(245, 158, 11, 0.12); color: var(--warning-color); }
+.stat-icon.info { background-color: rgba(6, 182, 212, 0.12); color: var(--info-color); }
+.stat-icon.purple { background-color: rgba(139, 92, 246, 0.12); color: var(--purple-color); }
+
+.stat-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* -------------------------------------------------------------------
+   Status Badges (Standardized Spec)
+   Applied = Blue, Shortlisted = Amber, Interview = Purple,
+   Selected = Green, Rejected = Red, Placed = Dark Green
+   ------------------------------------------------------------------- */
+.badge-status {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-applied {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-shortlisted {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-interview {
+    background-color: #ede9fe;
+    color: #5b21b6;
+}
+
+.badge-selected {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-rejected {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-placed {
+    background-color: #064e3b;
+    color: #ffffff;
+}
+
+.badge-pending {
+    background-color: #ffedd5;
+    color: #9a3412;
+}
+
+.badge-approved {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.badge-closed {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+[data-bs-theme="dark"] .badge-applied { background-color: rgba(30, 64, 175, 0.3); color: #93c5fd; }
+[data-bs-theme="dark"] .badge-shortlisted { background-color: rgba(146, 64, 14, 0.3); color: #fde68a; }
+[data-bs-theme="dark"] .badge-interview { background-color: rgba(91, 33, 182, 0.3); color: #c4b5fd; }
+[data-bs-theme="dark"] .badge-selected { background-color: rgba(6, 95, 70, 0.3); color: #6ee7b7; }
+[data-bs-theme="dark"] .badge-rejected { background-color: rgba(153, 27, 27, 0.3); color: #fca5a5; }
+[data-bs-theme="dark"] .badge-pending { background-color: rgba(154, 52, 18, 0.3); color: #fdba74; }
+[data-bs-theme="dark"] .badge-approved { background-color: rgba(22, 101, 52, 0.3); color: #86efac; }
+[data-bs-theme="dark"] .badge-closed { background-color: rgba(71, 85, 105, 0.3); color: #cbd5e1; }
+
+/* -------------------------------------------------------------------
+   Split Layout for Auth Pages (Login & Registration)
+   ------------------------------------------------------------------- */
+.auth-page {
+    min-height: 100vh;
+    background-color: var(--bg-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 1050px;
+    background-color: var(--bg-card);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.auth-banner {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.auth-banner-title {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.auth-form-side {
+    padding: 3rem;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+
+/* -------------------------------------------------------------------
+   Public Landing Page (Hero & Live Counters)
+   ------------------------------------------------------------------- */
+.public-hero {
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.08) 0%, rgba(248, 250, 252, 0) 100%);
+    padding: 5rem 0 4rem;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 650px;
+    margin: 1.25rem auto 2rem;
+}
+
+.live-counter-box {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1.25rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease;
+}
+
+.live-counter-box:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.live-counter-box .number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.live-counter-box .label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* -------------------------------------------------------------------
+   Responsive & Utilities
+   ------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+    .app-sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: calc(-1 * var(--sidebar-width));
+    }
+
+    .app-sidebar.show {
+        left: 0;
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1025;
+        display: none;
+    }
+
+    .sidebar-backdrop.show {
+        display: block;
+    }
+}

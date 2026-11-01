@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Welcome to Campus PMS')}"></head>
+<body>
+
+<!-- Public Sticky Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top bg-body border-bottom py-3 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4 text-primary" th:href="@{/}">
+            <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+            <span>Campus<span class="text-dark-emphasis">PMS</span></span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="publicNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="#stats">Statistics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="#how-it-works">How It Works</a>
+                </li>
+
+                <!-- Theme Toggle -->
+                <li class="nav-item ms-lg-2">
+                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-2 theme-toggle-btn">
+                        <i class="bi bi-moon-stars-fill theme-toggle-icon"></i>
+                    </button>
+                </li>
+
+                <!-- Authenticated / Anonymous Buttons -->
+                <li class="nav-item ms-lg-2" sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Sign In</a>
+                </li>
+                <li class="nav-item dropdown ms-lg-1" sec:authorize="!isAuthenticated()">
+                    <button class="btn btn-primary rounded-pill px-4 fw-semibold dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Register
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                        <li><a class="dropdown-item py-2" th:href="@{/register/student}"><i class="bi bi-mortarboard me-2 text-primary"></i>As Student</a></li>
+                        <li><a class="dropdown-item py-2" th:href="@{/register/company}"><i class="bi bi-building me-2 text-success"></i>As Hiring Company</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item ms-lg-2" sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/student/dashboard}" class="btn btn-primary rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-speedometer2 me-1"></i> Student Portal
+                    </a>
+                </li>
+                <li class="nav-item ms-lg-2" sec:authorize="hasRole('COMPANY')">
+                    <a th:href="@{/company/dashboard}" class="btn btn-success rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-speedometer2 me-1"></i> Company Portal
+                    </a>
+                </li>
+                <li class="nav-item ms-lg-2" sec:authorize="hasRole('OFFICER')">
+                    <a th:href="@{/officer/dashboard}" class="btn btn-dark rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-shield-lock me-1"></i> Officer Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="public-hero text-center">
+    <div class="container py-5">
+        <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 fw-semibold mb-3">
+            <i class="bi bi-stars me-1"></i> Modern Campus Placement Management System
+        </span>
+        <h1 class="hero-title mb-3">
+            Accelerate Your Career with <br>
+            <span class="text-primary" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Seamless Campus Recruitment</span>
+        </h1>
+        <p class="hero-subtitle">
+            A unified, transparent portal connecting ambitious students, top hiring companies, and the placement cell for automated eligibility checks, real-time tracking, and analytics.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a th:href="@{/register/student}" class="btn btn-primary btn-lg rounded-pill px-4 py-3 fw-bold shadow-sm">
+                <i class="bi bi-mortarboard-fill me-2"></i> Join as Student
+            </a>
+            <a th:href="@{/register/company}" class="btn btn-outline-secondary btn-lg rounded-pill px-4 py-3 fw-bold">
+                <i class="bi bi-building me-2"></i> Register Your Company
+            </a>
+            <a th:href="@{/login}" class="btn btn-light border btn-lg rounded-pill px-4 py-3 fw-bold">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Live Statistics Counters Section -->
+<section id="stats" class="py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h6 class="text-primary text-uppercase fw-bold letter-spacing-1">Real-time DB Metrics</h6>
+            <h2 class="fw-bold">Campus Placement at a Glance</h2>
+            <p class="text-muted">Live verified statistics from our active recruitment database</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Counter 1: Students Registered -->
+            <div class="col-6 col-md-4 col-lg">
+                <div class="live-counter-box">
+                    <div class="stat-icon primary mx-auto mb-3">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="number" th:text="${studentsRegistered}">0</div>
+                    <div class="label">Students Registered</div>
+                </div>
+            </div>
+
+            <!-- Counter 2: Students Placed -->
+            <div class="col-6 col-md-4 col-lg">
+                <div class="live-counter-box">
+                    <div class="stat-icon success mx-auto mb-3">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                    <div class="number text-success" th:text="${studentsPlaced}">0</div>
+                    <div class="label">Students Placed</div>
+                </div>
+            </div>
+
+            <!-- Counter 3: Companies Approved -->
+            <div class="col-6 col-md-4 col-lg">
+                <div class="live-counter-box">
+                    <div class="stat-icon purple mx-auto mb-3">
+                        <i class="bi bi-buildings-fill"></i>
+                    </div>
+                    <div class="number" style="color: var(--purple-color);" th:text="${companiesCount}">0</div>
+                    <div class="label">Hiring Companies</div>
+                </div>
+            </div>
+
+            <!-- Counter 4: Highest Package -->
+            <div class="col-6 col-md-6 col-lg">
+                <div class="live-counter-box">
+                    <div class="stat-icon warning mx-auto mb-3">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                    <div class="number text-warning" th:text="${highestPackage + ' LPA'}">0.0 LPA</div>
+                    <div class="label">Highest Package</div>
+                </div>
+            </div>
+
+            <!-- Counter 5: Average Package -->
+            <div class="col-12 col-md-6 col-lg">
+                <div class="live-counter-box">
+                    <div class="stat-icon info mx-auto mb-3">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="number" style="color: var(--info-color);" th:text="${averagePackage + ' LPA'}">0.0 LPA</div>
+                    <div class="label">Average Package</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary text-uppercase fw-bold">Simple & Structured Flow</h6>
+            <h2 class="fw-bold">How Campus PMS Works</h2>
+            <p class="text-muted">A step-by-step transparent pathway for everyone involved in campus recruitment</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Student Flow -->
+            <div class="col-md-4">
+                <div class="custom-card p-4 h-100 border-top border-4 border-primary">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <h4 class="fw-bold m-0">For Students</h4>
+                    </div>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-muted">
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-primary mt-1"></i>
+                            <span><strong>Profile & Resume:</strong> Register and achieve 100% profile completeness with PDF resume upload.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-primary mt-1"></i>
+                            <span><strong>Skill Match & Eligibility:</strong> View automatic skill match percentages and eligibility criteria checks.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-primary mt-1"></i>
+                            <span><strong>Application Tracking:</strong> Track stages from Applied to Interview Schedule and Selection badges.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Company Flow -->
+            <div class="col-md-4">
+                <div class="custom-card p-4 h-100 border-top border-4 border-success">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon success">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h4 class="fw-bold m-0">For Companies</h4>
+                    </div>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-muted">
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                            <span><strong>Self-Registration:</strong> Register your company details and wait for quick officer verification.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                            <span><strong>Post Openings:</strong> Create Full-Time, Internship, and PPO job postings with specific criteria.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                            <span><strong>Candidate Management:</strong> Review resumes, shortlist candidates, schedule interviews, and export CSV.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Officer Flow -->
+            <div class="col-md-4">
+                <div class="custom-card p-4 h-100 border-top border-4 border-warning">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon warning">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4 class="fw-bold m-0">For Officer</h4>
+                    </div>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-muted">
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-warning mt-1"></i>
+                            <span><strong>Verification & Approvals:</strong> Authorize companies and approve job descriptions before they go live.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-warning mt-1"></i>
+                            <span><strong>Announcements & Placements:</strong> Broadcast college updates and mark selected students as Placed.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-warning mt-1"></i>
+                            <span><strong>Analytics & Reports:</strong> Generate comprehensive department charts and download official CSV reports.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-body-tertiary border-top py-5 text-center text-muted">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-center gap-2 fw-bold fs-4 text-primary mb-3">
+            <i class="bi bi-mortarboard-fill"></i>
+            <span>Campus<span class="text-dark-emphasis">PMS</span></span>
+        </div>
+        <p class="mb-4 text-muted small">Campus Placement Management System &bull; College Career Guidance & Placement Cell</p>
+        <div class="small">
+            &copy; 2026 Campus Placement Management System. Cleanly crafted with Spring Boot 3, Thymeleaf & Bootstrap 5.
+        </div>
+    </div>
+</footer>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

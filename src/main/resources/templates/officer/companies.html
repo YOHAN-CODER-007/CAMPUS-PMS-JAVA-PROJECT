@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Companies Directory - Placement Officer')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('companies')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Companies Directory')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Registered Companies Directory</h3>
+                    <p class="text-muted small mb-0">Manage employer relationships, verify status, and control recruiter portal access.</p>
+                </div>
+            </div>
+
+            <div class="custom-card">
+                <div class="table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Company Name</th>
+                                <th>Location</th>
+                                <th>HR Contact</th>
+                                <th>Website</th>
+                                <th>Verification Status</th>
+                                <th>Account</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(companies)}">
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-buildings fs-1 d-block mb-2 opacity-50"></i>
+                                    <span>No companies registered yet.</span>
+                                </td>
+                            </tr>
+                            <tr th:each="comp : ${companies}">
+                                <td class="ps-4">
+                                    <div class="fw-bold" th:text="${comp.name}">Company Name</div>
+                                    <div class="small text-muted" th:text="${comp.user.email}">recruiter@email.com</div>
+                                </td>
+                                <td th:text="${comp.location}">Location</td>
+                                <td>
+                                    <div class="small fw-semibold" th:text="${comp.contactEmail}">hr@company.com</div>
+                                    <div class="small text-muted" th:text="${comp.contactNumber}">9876543210</div>
+                                </td>
+                                <td>
+                                    <a th:if="${comp.website != null and !comp.website.isEmpty()}" th:href="${comp.website}" target="_blank"
+                                       class="small text-primary text-decoration-none" th:text="${comp.website}">Website</a>
+                                    <span th:if="${comp.website == null or comp.website.isEmpty()}" class="text-muted small">None</span>
+                                </td>
+                                <td>
+                                    <span th:if="${comp.status.name() == 'APPROVED'}" class="badge-status badge-approved">Approved</span>
+                                    <span th:if="${comp.status.name() == 'PENDING'}" class="badge-status badge-pending">Pending</span>
+                                    <span th:if="${comp.status.name() == 'REJECTED'}" class="badge-status badge-rejected">Rejected</span>
+                                </td>
+                                <td>
+                                    <span th:if="${comp.user.active}" class="badge bg-success-subtle text-success">Active</span>
+                                    <span th:unless="${comp.user.active}" class="badge bg-danger-subtle text-danger">Blocked</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <form th:action="@{'/officer/companies/' + ${comp.id} + '/toggle-status'}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm rounded-pill px-3"
+                                                    th:classappend="${comp.user.active} ? 'btn-outline-warning' : 'btn-outline-success'">
+                                                <i class="bi" th:classappend="${comp.user.active} ? 'bi-slash-circle me-1' : 'bi-check-circle me-1'"></i>
+                                                <span th:text="${comp.user.active} ? 'Block' : 'Unblock'">Block</span>
+                                            </button>
+                                        </form>
+
+                                        <form th:action="@{'/officer/companies/' + ${comp.id} + '/delete'}" method="post" class="d-inline"
+                                              th:data-company-name="${comp.name}"
+                                              onsubmit="return confirm('WARNING: Are you sure you want to permanently remove company \'' + this.getAttribute('data-company-name') + '\'? All posted jobs, interview records, and applicant data will be permanently deleted.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                    title="Permanently Remove / Expel Company">
+                                                <i class="bi bi-trash3 me-1"></i> Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

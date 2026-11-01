@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Student Dashboard')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <!-- Backdrop for mobile -->
+    <div class="sidebar-backdrop"></div>
+
+    <!-- Sidebar Fragment -->
+    <aside th:replace="~{fragments/layout :: sidebar('dashboard')}"></aside>
+
+    <div class="app-main">
+        <!-- Top Navbar Fragment -->
+        <header th:replace="~{fragments/layout :: navbar('Student Dashboard')}"></header>
+
+        <!-- Main Content Area -->
+        <main class="app-content">
+            <!-- Flash Alerts -->
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Welcome Header & Profile Completeness -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="custom-card p-4 bg-body border-0 shadow-sm">
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-7">
+                                <h2 class="fw-bold mb-1">
+                                    Welcome, <span th:text="${profile != null ? profile.name : 'Student'}">Alex Johnson</span>! 👋
+                                </h2>
+                                <p class="text-muted mb-0">
+                                    <span th:text="${profile != null ? profile.department : 'Engineering'}">Computer Science</span> &bull;
+                                    Class of <span th:text="${profile != null ? profile.passingYear : '2026'}">2026</span> &bull;
+                                    CGPA: <strong class="text-primary" th:text="${profile != null ? profile.cgpa : 'N/A'}">8.5</strong>
+                                    <span th:if="${profile != null and profile.placed}" class="badge bg-success ms-2">
+                                        <i class="bi bi-award-fill me-1"></i> PLACED
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="p-3 rounded-3 bg-body-tertiary">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-semibold">Profile Completeness</span>
+                                        <span class="small fw-bold text-primary" th:text="${completeness + '%'}">70%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-primary" role="progressbar"
+                                             th:style="'width: ' + ${completeness} + '%'"
+                                             th:aria-valuenow="${completeness}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <span th:if="${completeness < 100}" class="small text-danger" style="font-size: 0.78rem;">
+                                            <i class="bi bi-exclamation-circle-fill me-1"></i> 100% required to apply
+                                        </span>
+                                        <span th:if="${completeness == 100}" class="small text-success" style="font-size: 0.78rem;">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Ready to apply for jobs
+                                        </span>
+                                        <a th:href="@{/student/profile}" class="small text-primary fw-semibold text-decoration-none">
+                                            Edit Profile &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric Stat Cards -->
+            <div class="row g-4 mb-4">
+                <!-- Applied -->
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Applications</div>
+                            <h3 class="stat-value" th:text="${appliedCount}">0</h3>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="bi bi-send-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shortlisted -->
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Shortlisted</div>
+                            <h3 class="stat-value text-warning" th:text="${shortlistedCount}">0</h3>
+                        </div>
+                        <div class="stat-icon warning">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interviews -->
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Interviews</div>
+                            <h3 class="stat-value" style="color: var(--purple-color);" th:text="${interviewCount}">0</h3>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected / Offers -->
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Selected Offers</div>
+                            <h3 class="stat-value text-success" th:text="${selectedCount}">0</h3>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Row: Quick Actions & Announcements -->
+            <div class="row g-4">
+                <!-- Quick Actions -->
+                <div class="col-lg-5">
+                    <div class="custom-card mb-4">
+                        <div class="card-header-clean">
+                            <h5><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="p-4 d-flex flex-column gap-3">
+                            <a th:href="@{/student/jobs}" class="btn btn-outline-primary p-3 rounded-3 text-start d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-2">
+                                        <i class="bi bi-briefcase-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Explore Campus Drives</div>
+                                        <div class="text-muted small">View active job postings and check eligibility</div>
+                                    </div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </a>
+
+                            <a th:href="@{/student/profile}" class="btn btn-outline-secondary p-3 rounded-3 text-start d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-secondary bg-opacity-10 text-secondary p-2">
+                                        <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Manage Profile & Resume</div>
+                                        <div class="text-muted small">Update skills, academic records, and upload PDF resume</div>
+                                    </div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </a>
+
+                            <a th:href="@{/student/applications}" class="btn btn-outline-info p-3 rounded-3 text-start d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-info bg-opacity-10 text-info p-2">
+                                        <i class="bi bi-clock-history fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Track Applications</div>
+                                        <div class="text-muted small">Check status badges and scheduled interview rounds</div>
+                                    </div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements Widget -->
+                <div class="col-lg-7">
+                    <div class="custom-card">
+                        <div class="card-header-clean">
+                            <h5><i class="bi bi-megaphone-fill text-primary me-2"></i>Placement Cell Announcements</h5>
+                        </div>
+                        <div class="p-4">
+                            <div th:if="${#lists.isEmpty(announcements)}" class="text-center py-4 text-muted">
+                                <i class="bi bi-chat-left-dots fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                <p class="mb-0">No announcements posted yet by the placement officer.</p>
+                            </div>
+
+                            <div th:unless="${#lists.isEmpty(announcements)}" class="d-flex flex-column gap-3">
+                                <div th:each="announcement : ${announcements}" class="p-3 rounded-3 bg-body-tertiary border-start border-4 border-primary">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="fw-bold mb-0" th:text="${announcement.title}">Drive Notice</h6>
+                                        <span class="text-muted small" th:text="${#temporals.format(announcement.createdAt, 'dd MMM yyyy, hh:mm a')}">Date</span>
+                                    </div>
+                                    <p class="text-muted small mb-0" th:text="${announcement.message}">Message content</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer Fragment -->
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

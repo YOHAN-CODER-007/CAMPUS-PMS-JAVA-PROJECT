@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Page Notice - Campus PMS')}"></head>
+<body class="bg-body d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+
+<div class="container text-center py-5" style="max-width: 600px;">
+    <div class="custom-card p-5 shadow-sm border-0">
+        <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto mb-4 d-flex align-items-center justify-content-center"
+             style="width: 80px; height: 80px;">
+            <i class="bi bi-compass-fill fs-1"></i>
+        </div>
+
+        <h2 class="fw-bold mb-2">Page Not Found or Under Construction</h2>
+        <p class="text-muted mb-4">
+            The page you are looking for is either not available or part of an upcoming system module.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a sec:authorize="hasRole('STUDENT')" th:href="@{/student/dashboard}" class="btn btn-primary-custom rounded-pill px-4 py-2">
+                <i class="bi bi-speedometer2 me-1"></i> Student Dashboard
+            </a>
+            <a sec:authorize="hasRole('COMPANY')" th:href="@{/company/dashboard}" class="btn btn-primary-custom rounded-pill px-4 py-2">
+                <i class="bi bi-speedometer2 me-1"></i> Company Dashboard
+            </a>
+            <a sec:authorize="hasRole('OFFICER')" th:href="@{/officer/dashboard}" class="btn btn-primary-custom rounded-pill px-4 py-2">
+                <i class="bi bi-speedometer2 me-1"></i> Officer Dashboard
+            </a>
+            <a th:href="@{/}" class="btn btn-light border rounded-pill px-4 py-2">
+                <i class="bi bi-house-door me-1"></i> Homepage
+            </a>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

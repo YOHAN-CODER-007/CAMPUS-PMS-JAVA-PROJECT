@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Post New Job Opening - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('post-job')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Post New Job Opening')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="custom-card">
+                <div class="card-header-clean">
+                    <h5><i class="bi bi-briefcase-fill text-primary me-2"></i>Job Drive & Eligibility Criteria</h5>
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2">
+                        <i class="bi bi-clock-history me-1"></i> Submissions go to PENDING for Officer Approval
+                    </span>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <form th:action="@{/company/jobs/create}" th:object="${job}" method="post">
+                        <div class="row g-4">
+                            <!-- Job Title -->
+                            <div class="col-md-6">
+                                <label for="title" class="form-label fw-semibold small">Job Title <span class="text-danger">*</span></label>
+                                <input type="text" id="title" th:field="*{title}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Associate Software Engineer" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <!-- Job Type -->
+                            <div class="col-md-6">
+                                <label for="jobType" class="form-label fw-semibold small">Job Type <span class="text-danger">*</span></label>
+                                <select id="jobType" th:field="*{jobType}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('jobType')} ? 'is-invalid' : ''" required>
+                                    <option th:each="type : ${jobTypes}" th:value="${type}" th:text="${type.displayName}">Full Time</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('jobType')}" th:errors="*{jobType}"></div>
+                            </div>
+
+                            <!-- Job Location -->
+                            <div class="col-md-4">
+                                <label for="location" class="form-label fw-semibold small">Work Location <span class="text-danger">*</span></label>
+                                <input type="text" id="location" th:field="*{location}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Bangalore / Hybrid / Remote" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+                            </div>
+
+                            <!-- CTC / Package (LPA) -->
+                            <div class="col-md-4">
+                                <label for="packageLpa" class="form-label fw-semibold small">Annual Package (LPA) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.1" min="0.1" id="packageLpa" th:field="*{packageLpa}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('packageLpa')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 12.5" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('packageLpa')}" th:errors="*{packageLpa}"></div>
+                            </div>
+
+                            <!-- Number of Vacancies -->
+                            <div class="col-md-4">
+                                <label for="vacancies" class="form-label fw-semibold small">Number of Vacancies <span class="text-danger">*</span></label>
+                                <input type="number" min="1" id="vacancies" th:field="*{vacancies}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('vacancies')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 5" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('vacancies')}" th:errors="*{vacancies}"></div>
+                            </div>
+
+                            <!-- Job Description -->
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-semibold small">Job Description & Responsibilities <span class="text-danger">*</span></label>
+                                <textarea id="description" th:field="*{description}" class="form-control" rows="4"
+                                          th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"
+                                          placeholder="Detail the day-to-day role, expectations, tech stacks, and interview stages..." required></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <!-- Eligibility Section Header -->
+                            <div class="col-12">
+                                <h6 class="fw-bold text-primary border-bottom pb-2 mb-0">
+                                    <i class="bi bi-shield-check me-1"></i> Automatic Eligibility Filters
+                                </h6>
+                            </div>
+
+                            <!-- Minimum CGPA -->
+                            <div class="col-md-3">
+                                <label for="minCgpa" class="form-label fw-semibold small">Minimum CGPA <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" min="0" max="10" id="minCgpa" th:field="*{minCgpa}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('minCgpa')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('minCgpa')}" th:errors="*{minCgpa}"></div>
+                            </div>
+
+                            <!-- Maximum Arrears Allowed -->
+                            <div class="col-md-3">
+                                <label for="maxArrearsAllowed" class="form-label fw-semibold small">Max Arrears Allowed <span class="text-danger">*</span></label>
+                                <input type="number" min="0" id="maxArrearsAllowed" th:field="*{maxArrearsAllowed}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('maxArrearsAllowed')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('maxArrearsAllowed')}" th:errors="*{maxArrearsAllowed}"></div>
+                            </div>
+
+                            <!-- Eligible Passing Year -->
+                            <div class="col-md-3">
+                                <label for="eligiblePassingYear" class="form-label fw-semibold small">Eligible Passing Year <span class="text-danger">*</span></label>
+                                <select id="eligiblePassingYear" th:field="*{eligiblePassingYear}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('eligiblePassingYear')} ? 'is-invalid' : ''" required>
+                                    <option value="" disabled selected>Select Year</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('eligiblePassingYear')}" th:errors="*{eligiblePassingYear}"></div>
+                            </div>
+
+                            <!-- Application Deadline -->
+                            <div class="col-md-3">
+                                <label for="deadline" class="form-label fw-semibold small">Application Deadline <span class="text-danger">*</span></label>
+                                <input type="date" id="deadline" th:field="*{deadline}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('deadline')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('deadline')}" th:errors="*{deadline}"></div>
+                            </div>
+
+                            <!-- Required Skills -->
+                            <div class="col-md-6">
+                                <label for="requiredSkills" class="form-label fw-semibold small">Required Skills (comma-separated) <span class="text-danger">*</span></label>
+                                <input type="text" id="requiredSkills" th:field="*{requiredSkills}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('requiredSkills')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Java, Spring Boot, MySQL, Git" required>
+                                <div class="form-text small">Used to compute Student Skill Match % on job cards.</div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('requiredSkills')}" th:errors="*{requiredSkills}"></div>
+                            </div>
+
+                            <!-- Eligible Departments -->
+                            <div class="col-md-6">
+                                <label for="eligibleDepartments" class="form-label fw-semibold small">Eligible Departments (comma-separated) <span class="text-danger">*</span></label>
+                                <input type="text" id="eligibleDepartments" th:field="*{eligibleDepartments}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('eligibleDepartments')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. CSE, IT, ECE" required>
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('CSE')">+ CSE</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('IT')">+ IT</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('ECE')">+ ECE</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('EEE')">+ EEE</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('MECH')">+ MECH</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('CIVIL')">+ CIVIL</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill small" onclick="appendDept('AIDS')">+ AI &amp; DS</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill small" onclick="appendDept('All Branches')">+ All</button>
+                                </div>
+                                <div class="form-text small">Both short forms (CSE, IT, ECE...) and full forms (Computer Science, etc.) are automatically matched.</div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('eligibleDepartments')}" th:errors="*{eligibleDepartments}"></div>
+                            </div>
+
+                            <!-- Internship Experience Required Checkbox & Details -->
+                            <div class="col-12">
+                                <div class="p-3 rounded-3 border bg-body-tertiary">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="internshipExperienceRequired"
+                                               th:field="*{internshipExperienceRequired}">
+                                        <label class="form-check-label fw-semibold small" for="internshipExperienceRequired">
+                                            Prior Internship Experience Required?
+                                        </label>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" th:field="*{internshipExperienceDetails}"
+                                           placeholder="Short details, e.g. 'Minimum 3 months hands-on experience in Java or Backend APIs'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-3">
+                            <a th:href="@{/company/jobs}" class="btn btn-light border px-4 py-2 rounded-pill">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4 py-2 rounded-pill">
+                                <i class="bi bi-send-check-fill me-1"></i> Submit Job for Officer Approval
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    function appendDept(dept) {
+        const input = document.getElementById('eligibleDepartments');
+        if (!input) return;
+        const current = input.value.trim();
+        if (dept === 'All Branches') {
+            input.value = 'All Branches';
+            return;
+        }
+        if (current === '' || current === 'All Branches') {
+            input.value = dept;
+        } else {
+            const parts = current.split(',').map(s => s.trim().toUpperCase());
+            if (!parts.includes(dept.toUpperCase())) {
+                input.value = current + ', ' + dept;
+            }
+        }
+    }
+</script>
+</body>
+</html>

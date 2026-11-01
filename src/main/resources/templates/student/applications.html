@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('My Applications - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('applications')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('My Applications')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Your Job Application Status</h3>
+                    <p class="text-muted small mb-0">Track your recruitment milestones, interview rounds, and selection outcomes.</p>
+                </div>
+            </div>
+
+            <div class="custom-card">
+                <div class="table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Job Title & Company</th>
+                                <th>Package (LPA)</th>
+                                <th>Applied Date</th>
+                                <th>Status</th>
+                                <th>Interview Schedule</th>
+                                <th class="text-end pe-4">Venue / Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(applications)}">
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-send fs-1 d-block mb-2 opacity-50"></i>
+                                    <span>You haven't applied to any campus drives yet.</span>
+                                    <div class="mt-2">
+                                        <a th:href="@{/student/jobs}" class="btn btn-sm btn-primary-custom rounded-pill px-3">
+                                            Explore Campus Jobs &rarr;
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:each="app : ${applications}">
+                                <td class="ps-4">
+                                    <div class="fw-bold" th:text="${app.job.title}">Job Title</div>
+                                    <div class="small text-muted" th:text="${app.job.company.name}">Company Name</div>
+                                </td>
+                                <td class="fw-bold text-primary" th:text="${app.job.packageLpa + ' LPA'}">12 LPA</td>
+                                <td class="small" th:text="${#temporals.format(app.appliedDate, 'dd MMM yyyy')}">25 Oct 2026</td>
+                                <td>
+                                    <span class="badge-status" th:classappend="${app.status.badgeClass}">
+                                        <span th:text="${app.status.displayName}">Applied</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div th:if="${app.interviewDate != null}">
+                                        <div class="fw-semibold small text-primary">
+                                            <i class="bi bi-calendar-event me-1"></i>
+                                            <span th:text="${#temporals.format(app.interviewDate, 'dd MMM yyyy')}">Date</span>
+                                        </div>
+                                        <div class="small text-muted" th:text="${app.interviewTime}">10:00 AM</div>
+                                    </div>
+                                    <span th:if="${app.interviewDate == null}" class="text-muted small">Not Scheduled</span>
+                                </td>
+                                <td class="text-end pe-4 small" th:text="${app.interviewVenue != null ? app.interviewVenue : 'TBD'}">
+                                    Placement Hall A
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

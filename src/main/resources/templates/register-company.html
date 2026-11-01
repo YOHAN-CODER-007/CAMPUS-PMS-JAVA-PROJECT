@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Company Registration - Campus PMS')}"></head>
+<body class="bg-body">
+
+<div class="auth-page">
+    <div class="auth-container" style="max-width: 1100px;">
+        <div class="row g-0">
+            <!-- Left Side: Gradient Banner -->
+            <div class="col-lg-4 d-none d-lg-block">
+                <div class="auth-banner" style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%);">
+                    <div>
+                        <a th:href="@{/}" class="text-white text-decoration-none d-flex align-items-center gap-2 mb-4">
+                            <i class="bi bi-mortarboard-fill fs-2"></i>
+                            <span class="fs-4 fw-bold">Campus<span class="text-warning">PMS</span></span>
+                        </a>
+                        <h2 class="auth-banner-title mb-3">Hire Top Campus Talent</h2>
+                        <p class="text-white-50">
+                            Partner with our institution to recruit exceptional engineering students. Post job openings, schedule interviews, and build your future team.
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-top border-white border-opacity-25">
+                        <div class="alert alert-light bg-white bg-opacity-10 border-0 text-white p-3 rounded-3 small">
+                            <i class="bi bi-shield-check fs-5 me-1 align-middle"></i>
+                            <strong>Officer Approval Required:</strong> All newly registered companies are verified by our placement cell before job postings go live.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Company Registration Form -->
+            <div class="col-lg-8">
+                <div class="auth-form-side p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Company Partner Registration</h2>
+                            <p class="text-muted small">Register your organization to begin on-campus hiring</p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 theme-toggle-btn">
+                            <i class="bi bi-moon-stars-fill theme-toggle-icon"></i>
+                        </button>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+                    <form th:action="@{/register/company}" th:object="${companyDto}" method="post">
+                        <div class="row g-3">
+                            <!-- Company Name -->
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold small">Company / Organization Name <span class="text-danger">*</span></label>
+                                <input type="text" id="name" th:field="*{name}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Acme Tech Solutions" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Headquarters / Location -->
+                            <div class="col-md-6">
+                                <label for="location" class="form-label fw-semibold small">Office Location / City <span class="text-danger">*</span></label>
+                                <input type="text" id="location" th:field="*{location}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Bangalore, India" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+                            </div>
+
+                            <!-- Account Login Email -->
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold small">Account Login Email <span class="text-danger">*</span></label>
+                                <input type="email" id="email" th:field="*{email}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                       placeholder="recruitment@acmetech.com" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- HR Contact Email -->
+                            <div class="col-md-6">
+                                <label for="contactEmail" class="form-label fw-semibold small">Official HR Contact Email <span class="text-danger">*</span></label>
+                                <input type="email" id="contactEmail" th:field="*{contactEmail}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('contactEmail')} ? 'is-invalid' : ''"
+                                       placeholder="hr@acmetech.com" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}"></div>
+                            </div>
+
+                            <!-- Contact Phone Number -->
+                            <div class="col-md-6">
+                                <label for="contactNumber" class="form-label fw-semibold small">HR Contact Phone Number <span class="text-danger">*</span></label>
+                                <input type="text" id="contactNumber" th:field="*{contactNumber}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('contactNumber')} ? 'is-invalid' : ''"
+                                       placeholder="+91 9876543210" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactNumber')}" th:errors="*{contactNumber}"></div>
+                            </div>
+
+                            <!-- Website -->
+                            <div class="col-md-6">
+                                <label for="website" class="form-label fw-semibold small">Official Website URL</label>
+                                <input type="url" id="website" th:field="*{website}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('website')} ? 'is-invalid' : ''"
+                                       placeholder="https://acmetech.com">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('website')}" th:errors="*{website}"></div>
+                            </div>
+
+                            <!-- Company Description -->
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-semibold small">About Company / Industry Overview</label>
+                                <textarea id="description" th:field="*{description}" class="form-control" rows="3"
+                                          placeholder="Briefly describe your company, domains of work, and hiring expectations..."></textarea>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label for="password" class="form-label fw-semibold small">Create Password <span class="text-danger">*</span></label>
+                                <input type="password" id="password" th:field="*{password}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                       placeholder="Min. 6 characters" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label fw-semibold small">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                                       placeholder="Re-enter password" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning border-0 p-3 rounded-3 small mt-3">
+                            <i class="bi bi-info-circle-fill me-1"></i>
+                            <strong>Note:</strong> After registration, your account will be in <strong>PENDING</strong> status. You will be able to log in once the Placement Officer approves your registration.
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 fs-6 mt-2 rounded-3 fw-bold">
+                            <i class="bi bi-building-add me-1"></i> Submit Company Registration
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <span class="text-muted small">Already registered?</span>
+                        <a th:href="@{/login}" class="small text-success fw-semibold text-decoration-none ms-1">
+                            Sign in here
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

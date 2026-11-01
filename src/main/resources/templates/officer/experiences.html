@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Interview Experiences Moderation - Placement Officer')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('experiences')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Interview Experiences Moderation')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Student Interview Stories</h3>
+                    <p class="text-muted small mb-0">Review peer experiences submitted by placed students, monitor insights, and remove inappropriate submissions.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div th:if="${#lists.isEmpty(experiences)}" class="col-12">
+                    <div class="custom-card p-5 text-center text-muted">
+                        <i class="bi bi-chat-square-quote fs-1 d-block mb-3 opacity-50"></i>
+                        <h5>No interview experiences published yet</h5>
+                        <p class="small mb-0">Placed candidates will share their recruitment tips and round insights here.</p>
+                    </div>
+                </div>
+
+                <div th:each="exp : ${experiences}" class="col-md-6">
+                    <div class="custom-card p-4 h-100 border-top border-4 border-primary position-relative">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-primary" th:text="${exp.company.name}">Company Name</h5>
+                                <span class="small text-muted">
+                                    Posted by <strong th:text="${exp.student.name}">Student</strong> (<span th:text="${exp.student.department}">CSE</span>)
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted" th:text="${#temporals.format(exp.createdAt, 'dd MMM yyyy')}">Date</span>
+                                <form th:action="@{'/officer/experiences/' + ${exp.id} + '/delete'}" method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete this interview experience?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger p-1 border-0" title="Delete post">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="small fw-bold text-uppercase text-secondary mb-1">Recruitment Rounds:</h6>
+                            <p class="small text-muted mb-0" th:text="${exp.rounds}">Round breakdown</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="small fw-bold text-uppercase text-secondary mb-1">Questions Asked:</h6>
+                            <p class="small text-muted mb-0" th:text="${exp.questionsAsked}">Questions</p>
+                        </div>
+
+                        <div class="p-3 rounded-3 bg-body-tertiary">
+                            <h6 class="small fw-bold text-success mb-1"><i class="bi bi-lightbulb-fill me-1"></i> Advice & Tips:</h6>
+                            <p class="small text-muted mb-0" th:text="${exp.tips}">Tips</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

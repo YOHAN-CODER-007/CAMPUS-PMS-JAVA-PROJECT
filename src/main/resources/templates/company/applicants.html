@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Applicant Candidates - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('applicants')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Job Applicants')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">
+                        Candidate Applications
+                        <span th:if="${job != null}" class="text-primary fs-5" th:text="' - ' + ${job.title}"> - Software Engineer</span>
+                    </h3>
+                    <p class="text-muted small mb-0">Review student profiles, inspect PDF resumes, schedule interview rounds, and advance applicant statuses.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:if="${job != null}" th:href="@{'/company/jobs/' + ${job.id} + '/export-csv'}" class="btn btn-outline-success rounded-pill px-3">
+                        <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Export Applicants (CSV)
+                    </a>
+                    <a th:href="@{/company/jobs}" class="btn btn-outline-secondary rounded-pill px-3">
+                        <i class="bi bi-briefcase me-1"></i> All Postings
+                    </a>
+                </div>
+            </div>
+
+            <div class="custom-card">
+                <div class="table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Candidate</th>
+                                <th>Department</th>
+                                <th>CGPA & Arrears</th>
+                                <th>Key Skills</th>
+                                <th>Resume</th>
+                                <th>Recruitment Status</th>
+                                <th>Interview Schedule</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(applications)}">
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people fs-1 d-block mb-2 opacity-50"></i>
+                                    <span>No candidate applications recorded yet for this drive.</span>
+                                </td>
+                            </tr>
+                            <tr th:each="app : ${applications}">
+                                <td class="ps-4">
+                                    <div class="fw-bold" th:text="${app.student.name}">Student Name</div>
+                                    <div class="small text-muted" th:text="${app.student.collegeEmail}">student@college.edu</div>
+                                    <div class="small text-muted" th:text="${app.student.contactNumber}">9876543210</div>
+                                </td>
+                                <td>
+                                    <span class="small fw-semibold" th:text="${app.student.department}">CSE</span>
+                                    <div class="small text-muted" th:text="'Batch ' + ${app.student.passingYear}">2026</div>
+                                </td>
+                                <td>
+                                    <div>
+                                        CGPA: <strong class="text-primary" th:text="${app.student.cgpa}">8.5</strong>
+                                    </div>
+                                    <div class="small">
+                                        Arrears:
+                                        <span th:if="${app.student.totalArrears == 0}" class="badge bg-success-subtle text-success">0</span>
+                                        <span th:if="${app.student.totalArrears > 0}" class="badge bg-danger-subtle text-danger" th:text="${app.student.totalArrears}">1</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1" style="max-width: 220px;">
+                                        <span th:each="sk : ${app.student.skillList}" class="badge bg-secondary-subtle text-secondary small" th:text="${sk}">Java</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a th:if="${app.student.resumePath != null and !app.student.resumePath.isEmpty()}"
+                                       th:href="@{'/student/resume/' + ${app.student.resumePath}}" target="_blank"
+                                       class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> View PDF
+                                    </a>
+                                    <span th:if="${app.student.resumePath == null or app.student.resumePath.isEmpty()}" class="text-muted small">No Resume</span>
+                                </td>
+                                <td>
+                                    <span class="badge-status" th:classappend="${app.status.badgeClass}">
+                                        <span th:text="${app.status.displayName}">Applied</span>
+                                    </span>
+                                    <div class="small text-muted mt-1" style="font-size: 0.72rem;" th:text="${#temporals.format(app.appliedDate, 'dd MMM yyyy')}">25 Oct</div>
+                                </td>
+                                <td>
+                                    <div th:if="${app.interviewDate != null}">
+                                        <div class="small fw-semibold text-primary">
+                                            <i class="bi bi-calendar-event me-1"></i><span th:text="${#temporals.format(app.interviewDate, 'dd MMM yyyy')}">28 Oct 2026</span>
+                                        </div>
+                                        <div class="small text-muted" th:if="${app.interviewTime != null and !app.interviewTime.isEmpty()}">
+                                            <i class="bi bi-clock me-1"></i><span th:text="${app.interviewTime}">10:00 AM</span>
+                                        </div>
+                                        <div class="small text-muted text-truncate" style="max-width: 140px;" th:if="${app.interviewVenue != null and !app.interviewVenue.isEmpty()}" th:title="${app.interviewVenue}">
+                                            <i class="bi bi-geo-alt me-1"></i><span th:text="${app.interviewVenue}">Venue</span>
+                                        </div>
+                                    </div>
+                                    <span th:unless="${app.interviewDate != null}" class="text-muted small">Not scheduled</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group btn-group-sm">
+                                        <!-- Shortlist button (for APPLIED) -->
+                                        <form th:if="${app.status.name() == 'APPLIED'}"
+                                              th:action="@{'/company/applications/' + ${app.id} + '/status'}" method="post" class="d-inline">
+                                            <input type="hidden" name="status" value="SHORTLISTED">
+                                            <input type="hidden" name="jobId" th:if="${job != null}" th:value="${job.id}">
+                                            <button type="submit" class="btn btn-outline-warning" title="Shortlist Candidate">
+                                                <i class="bi bi-star me-1"></i> Shortlist
+                                            </button>
+                                        </form>
+
+                                        <!-- Schedule Interview Button (Modal Trigger) -->
+                                        <button th:if="${app.status.name() != 'SELECTED' and app.status.name() != 'PLACED' and app.status.name() != 'REJECTED'}"
+                                                type="button" class="btn btn-outline-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#interviewModal"
+                                                th:attr="data-app-id=${app.id},data-candidate-name=${app.student.name},data-job-title=${app.job.title}"
+                                                title="Schedule Interview Round">
+                                            <i class="bi bi-calendar-plus me-1"></i> Interview
+                                        </button>
+
+                                        <!-- Select button (for SHORTLISTED / INTERVIEW_SCHEDULED) -->
+                                        <form th:if="${app.status.name() == 'SHORTLISTED' or app.status.name() == 'INTERVIEW_SCHEDULED'}"
+                                              th:action="@{'/company/applications/' + ${app.id} + '/status'}" method="post" class="d-inline">
+                                            <input type="hidden" name="status" value="SELECTED">
+                                            <input type="hidden" name="jobId" th:if="${job != null}" th:value="${job.id}">
+                                            <button type="submit" class="btn btn-outline-success" title="Select Candidate">
+                                                <i class="bi bi-check-lg me-1"></i> Select
+                                            </button>
+                                        </form>
+
+                                        <!-- Reject button -->
+                                        <form th:if="${app.status.name() != 'SELECTED' and app.status.name() != 'PLACED' and app.status.name() != 'REJECTED'}"
+                                              th:action="@{'/company/applications/' + ${app.id} + '/status'}" method="post" class="d-inline">
+                                            <input type="hidden" name="status" value="REJECTED">
+                                            <input type="hidden" name="jobId" th:if="${job != null}" th:value="${job.id}">
+                                            <button type="submit" class="btn btn-outline-danger" title="Reject Candidate"
+                                                    onclick="return confirm('Are you sure you want to reject this candidate?');">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Final Status Tags -->
+                                        <span th:if="${app.status.name() == 'SELECTED'}" class="badge bg-success-subtle text-success py-2 px-3">
+                                            <i class="bi bi-award-fill me-1"></i> Selected
+                                        </span>
+                                        <span th:if="${app.status.name() == 'PLACED'}" class="badge bg-success py-2 px-3 text-white">
+                                            <i class="bi bi-check2-all me-1"></i> Placed
+                                        </span>
+                                        <span th:if="${app.status.name() == 'REJECTED'}" class="badge bg-danger-subtle text-danger py-2 px-3">
+                                            <i class="bi bi-slash-circle me-1"></i> Rejected
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<!-- ===================================================================
+     SCHEDULE INTERVIEW MODAL
+     =================================================================== -->
+<div class="modal fade" id="interviewModal" tabindex="-1" aria-labelledby="interviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="interviewModalLabel">
+                    <i class="bi bi-calendar-event me-2"></i>Schedule Interview
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="scheduleInterviewForm" th:action="@{/company/applications/0/schedule}" method="post">
+                <!-- CSRF Protection -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body p-4">
+                    <div class="alert alert-info py-2 small mb-3">
+                        Candidate: <strong id="modalCandidateName">Candidate</strong><br>
+                        Job Drive: <span id="modalJobTitle">Role</span>
+                    </div>
+
+                    <input type="hidden" name="jobId" th:if="${job != null}" th:value="${job.id}">
+
+                    <div class="mb-3">
+                        <label for="interviewDate" class="form-label fw-semibold small">Interview Date <span class="text-danger">*</span></label>
+                        <input type="date" id="interviewDate" name="interviewDate" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="interviewTime" class="form-label fw-semibold small">Interview Time <span class="text-danger">*</span></label>
+                        <input type="text" id="interviewTime" name="interviewTime" class="form-control"
+                               placeholder="e.g. 10:30 AM or 02:00 PM" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="interviewVenue" class="form-label fw-semibold small">Mode / Venue / Meeting Link <span class="text-danger">*</span></label>
+                        <input type="text" id="interviewVenue" name="interviewVenue" class="form-control"
+                               placeholder="e.g. Conference Room 3 or Google Meet: meet.google.com/xyz" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4">
+                        <i class="bi bi-send-check me-1"></i> Confirm & Notify Candidate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var interviewModal = document.getElementById('interviewModal');
+        if (interviewModal) {
+            interviewModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var appId = button.getAttribute('data-app-id');
+                var candidateName = button.getAttribute('data-candidate-name');
+                var jobTitle = button.getAttribute('data-job-title');
+
+                document.getElementById('modalCandidateName').textContent = candidateName;
+                document.getElementById('modalJobTitle').textContent = jobTitle;
+
+                var form = document.getElementById('scheduleInterviewForm');
+                var baseAction = form.getAttribute('action');
+                if (baseAction && baseAction.indexOf('/0/schedule') !== -1) {
+                    form.action = baseAction.replace('/0/schedule', '/' + appId + '/schedule');
+                } else {
+                    form.action = '/company/applications/' + appId + '/schedule';
+                }
+
+                // Set min date to today
+                var today = new Date().toISOString().split('T')[0];
+                document.getElementById('interviewDate').min = today;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

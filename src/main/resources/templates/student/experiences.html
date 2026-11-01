@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Interview Experiences - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('experiences')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Interview Experiences & Tips')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Peer Interview Insights</h3>
+                    <p class="text-muted small mb-0">Learn from seniors and placed candidates about recruitment rounds, questions asked, and preparation strategies.</p>
+                </div>
+                <div>
+                    <!-- Share Button for Placed Students -->
+                    <button th:if="${profile != null and profile.placed}" type="button" class="btn btn-primary-custom rounded-pill px-4"
+                            data-bs-toggle="modal" data-bs-target="#shareExpModal">
+                        <i class="bi bi-pencil-square me-1"></i> Share Your Experience
+                    </button>
+                    <!-- Encouragement for Unplaced Students -->
+                    <span th:if="${profile != null and !profile.placed}" class="badge bg-body-secondary text-secondary border px-3 py-2 rounded-pill small">
+                        <i class="bi bi-award me-1 text-primary"></i> Clear a campus drive to unlock experience sharing
+                    </span>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div th:if="${#lists.isEmpty(experiences)}" class="col-12">
+                    <div class="custom-card p-5 text-center text-muted">
+                        <i class="bi bi-chat-quote fs-1 d-block mb-3 opacity-50"></i>
+                        <h5>No interview experiences shared yet</h5>
+                        <p class="small mb-0">Placed candidates will share their recruitment tips and round-by-round insights here.</p>
+                    </div>
+                </div>
+
+                <div th:each="exp : ${experiences}" class="col-md-6">
+                    <div class="custom-card p-4 h-100 border-top border-4 border-primary">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-primary" th:text="${exp.company.name}">Company Name</h5>
+                                <span class="small text-muted">
+                                    Shared by <strong th:text="${exp.student.name}">Student</strong> (<span th:text="${exp.student.department}">CSE</span>)
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted" th:text="${#temporals.format(exp.createdAt, 'dd MMM yyyy')}">Date</span>
+                                <form th:if="${profile != null and exp.student.id == profile.id}"
+                                      th:action="@{'/student/experiences/' + ${exp.id} + '/delete'}" method="post" class="d-inline"
+                                      th:data-company-name="${exp.company.name}"
+                                      onsubmit="return confirm('Are you sure you want to remove your interview experience for ' + this.getAttribute('data-company-name') + '?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-0"
+                                            title="Delete Your Interview Experience">
+                                        <i class="bi bi-trash3 me-1"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="small fw-bold text-uppercase text-secondary mb-1">Interview Rounds:</h6>
+                            <p class="small text-muted mb-0" th:text="${exp.rounds}">Round breakdown</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="small fw-bold text-uppercase text-secondary mb-1">Key Questions Asked:</h6>
+                            <p class="small text-muted mb-0" th:text="${exp.questionsAsked}">Questions asked</p>
+                        </div>
+
+                        <div class="p-3 rounded-3 bg-body-tertiary">
+                            <h6 class="small fw-bold text-success mb-1"><i class="bi bi-lightbulb-fill me-1"></i> Preparation Advice:</h6>
+                            <p class="small text-muted mb-0" th:text="${exp.tips}">Preparation tips</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<!-- ===================================================================
+     SHARE EXPERIENCE MODAL
+     =================================================================== -->
+<div th:if="${profile != null and profile.placed}" class="modal fade" id="shareExpModal" tabindex="-1" aria-labelledby="shareExpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="shareExpModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>Share Your Interview Experience
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/student/experiences}" method="post">
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Help fellow students prepare by detailing the recruitment process, coding questions, and your study strategies.</p>
+
+                    <div class="mb-3">
+                        <label for="companyId" class="form-label fw-semibold small">Company Name <span class="text-danger">*</span></label>
+                        <select id="companyId" name="companyId" class="form-select" required>
+                            <option value="" disabled selected>-- Select Company --</option>
+                            <option th:each="comp : ${companies}" th:value="${comp.id}" th:text="${comp.name}">Google India</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rounds" class="form-label fw-semibold small">Interview Rounds Breakdown <span class="text-danger">*</span></label>
+                        <textarea id="rounds" name="rounds" class="form-control" rows="3"
+                                  placeholder="e.g. Round 1: Online Assessment (60 mins, 2 coding problems + 20 MCQs), Round 2: Technical Interview (DSA + DBMS), Round 3: HR & Cultural Fit" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="questionsAsked" class="form-label fw-semibold small">Key Questions Asked <span class="text-danger">*</span></label>
+                        <textarea id="questionsAsked" name="questionsAsked" class="form-control" rows="4"
+                                  placeholder="e.g. 1. Reverse linked list in groups of K. 2. Explain ACID properties and indexing in MySQL. 3. Questions about my final year project architecture." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tips" class="form-label fw-semibold small">Preparation Tips & Recommended Resources <span class="text-danger">*</span></label>
+                        <textarea id="tips" name="tips" class="form-control" rows="3"
+                                  placeholder="e.g. Focus on Striver SDE sheet for DSA, revise OOP fundamentals, and practice mock behavioral questions." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4">
+                        <i class="bi bi-send-fill me-1"></i> Publish Experience
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

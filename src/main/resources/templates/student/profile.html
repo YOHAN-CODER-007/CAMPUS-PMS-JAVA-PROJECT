@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('My Profile - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <!-- Sidebar Fragment -->
+    <aside th:replace="~{fragments/layout :: sidebar('profile')}"></aside>
+
+    <div class="app-main">
+        <!-- Top Navbar Fragment -->
+        <header th:replace="~{fragments/layout :: navbar('Student Profile & Resume')}"></header>
+
+        <!-- Main Content -->
+        <main class="app-content">
+            <!-- Flash Alerts -->
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Profile Completeness Card -->
+            <div class="custom-card p-4 mb-4">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h4 class="fw-bold m-0">Profile Completeness Status</h4>
+                            <span th:if="${completeness == 100}" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">
+                                <i class="bi bi-check-circle-fill me-1"></i> 100% Complete &bull; Eligible to Apply
+                            </span>
+                            <span th:if="${completeness < 100}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Incomplete (<span th:text="${completeness}">70</span>%)
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            A complete profile is required to apply for jobs. Please fill in all 10 core fields including your academic metrics, skills, and PDF resume.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-semibold text-muted">Progress</span>
+                            <span class="small fw-bold text-primary" th:text="${completeness + '%'}">70%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                 th:style="'width: ' + ${completeness} + '%'"
+                                 th:aria-valuenow="${completeness}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Edit Form -->
+            <div class="custom-card">
+                <div class="card-header-clean">
+                    <h5><i class="bi bi-person-lines-fill text-primary me-2"></i>Personal & Academic Information</h5>
+                    <span th:if="${profile.placed}" class="badge bg-success px-3 py-2">
+                        <i class="bi bi-award-fill me-1"></i> You are marked as PLACED
+                    </span>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <form th:action="@{/student/profile}" th:object="${profile}" method="post" enctype="multipart/form-data">
+                        <!-- Hidden ID -->
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row g-4">
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold small">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" id="name" th:field="*{name}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-md-6">
+                                <label for="dateOfBirth" class="form-label fw-semibold small">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="col-md-6">
+                                <label for="department" class="form-label fw-semibold small">Department / Major <span class="text-danger">*</span></label>
+                                <select id="department" th:field="*{department}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('department')} ? 'is-invalid' : ''" required>
+                                    <option value="" disabled>Select Department</option>
+                                    <option value="Computer Science & Engineering">Computer Science & Engineering (CSE)</option>
+                                    <option value="Information Technology">Information Technology (IT)</option>
+                                    <option value="Electronics & Communication">Electronics & Communication (ECE)</option>
+                                    <option value="Electrical & Electronics">Electrical & Electronics (EEE)</option>
+                                    <option value="Mechanical Engineering">Mechanical Engineering (MECH)</option>
+                                    <option value="Civil Engineering">Civil Engineering (CIVIL)</option>
+                                    <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science (AI & DS)</option>
+                                    <option th:if="${profile.department == 'CSE'}" value="CSE" selected>CSE (Computer Science & Engineering)</option>
+                                    <option th:if="${profile.department == 'IT'}" value="IT" selected>IT (Information Technology)</option>
+                                    <option th:if="${profile.department == 'ECE'}" value="ECE" selected>ECE (Electronics & Communication)</option>
+                                    <option th:if="${profile.department == 'EEE'}" value="EEE" selected>EEE (Electrical & Electronics)</option>
+                                    <option th:if="${profile.department == 'MECH'}" value="MECH" selected>MECH (Mechanical Engineering)</option>
+                                    <option th:if="${profile.department == 'CIVIL'}" value="CIVIL" selected>CIVIL (Civil Engineering)</option>
+                                    <option th:if="${profile.department == 'AIDS'}" value="AIDS" selected>AIDS (Artificial Intelligence & Data Science)</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+                            </div>
+
+                            <!-- College Official Email -->
+                            <div class="col-md-6">
+                                <label for="collegeEmail" class="form-label fw-semibold small">College Email ID <span class="text-danger">*</span></label>
+                                <input type="email" id="collegeEmail" th:field="*{collegeEmail}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('collegeEmail')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('collegeEmail')}" th:errors="*{collegeEmail}"></div>
+                            </div>
+
+                            <!-- Contact Number -->
+                            <div class="col-md-4">
+                                <label for="contactNumber" class="form-label fw-semibold small">Contact Number <span class="text-danger">*</span></label>
+                                <input type="text" id="contactNumber" th:field="*{contactNumber}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('contactNumber')} ? 'is-invalid' : ''" maxlength="10" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactNumber')}" th:errors="*{contactNumber}"></div>
+                            </div>
+
+                            <!-- CGPA -->
+                            <div class="col-md-4">
+                                <label for="cgpa" class="form-label fw-semibold small">Current CGPA (0.0 - 10.0) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" min="0" max="10" id="cgpa" th:field="*{cgpa}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('cgpa')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cgpa')}" th:errors="*{cgpa}"></div>
+                            </div>
+
+                            <!-- Total Standing Arrears -->
+                            <div class="col-md-4">
+                                <label for="totalArrears" class="form-label fw-semibold small">Total Arrears (0 if none) <span class="text-danger">*</span></label>
+                                <input type="number" min="0" id="totalArrears" th:field="*{totalArrears}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('totalArrears')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('totalArrears')}" th:errors="*{totalArrears}"></div>
+                            </div>
+
+                            <!-- Passing Year -->
+                            <div class="col-md-6">
+                                <label for="passingYear" class="form-label fw-semibold small">Graduation Year <span class="text-danger">*</span></label>
+                                <select id="passingYear" th:field="*{passingYear}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('passingYear')} ? 'is-invalid' : ''" required>
+                                    <option value="" disabled>Select Graduation Year</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('passingYear')}" th:errors="*{passingYear}"></div>
+                            </div>
+
+                            <!-- Skills -->
+                            <div class="col-md-6">
+                                <label for="skills" class="form-label fw-semibold small">Key Technical Skills (comma-separated) <span class="text-danger">*</span></label>
+                                <input type="text" id="skills" th:field="*{skills}" class="form-control"
+                                       placeholder="e.g. Java, Spring Boot, MySQL, React, Git" required>
+                                <div class="form-text small">Used for real-time skill matching against job requirements.</div>
+                            </div>
+
+                            <!-- Skills preview pills -->
+                            <div class="col-12" th:if="${not #lists.isEmpty(profile.skillList)}">
+                                <div class="small fw-semibold text-muted mb-2">Registered Skills:</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span th:each="skill : ${profile.skillList}" class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+                                        <i class="bi bi-tag-fill me-1"></i> <span th:text="${skill}">Java</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Resume PDF Upload -->
+                            <div class="col-12">
+                                <div class="p-4 rounded-3 border bg-body-tertiary">
+                                    <label for="resumeFile" class="form-label fw-bold mb-1">
+                                        <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i> Upload Resume (PDF only, max 2MB)
+                                    </label>
+                                    <p class="text-muted small mb-3">Upload your latest resume in PDF format. Recruiters will be able to review this directly.</p>
+
+                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                        <input type="file" id="resumeFile" name="resumeFile" class="form-control" accept=".pdf" style="max-width: 400px;">
+
+                                        <div th:if="${profile.resumePath != null and !profile.resumePath.isEmpty()}">
+                                            <a th:href="@{'/student/resume/' + ${profile.resumePath}}" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2">
+                                                <i class="bi bi-eye-fill me-1"></i> View Current Resume (PDF)
+                                            </a>
+                                            <span class="text-success small ms-2"><i class="bi bi-check-circle-fill"></i> Resume uploaded</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-3">
+                            <a th:href="@{/student/dashboard}" class="btn btn-light border px-4 py-2 rounded-pill">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4 py-2 rounded-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i> Save & Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer Fragment -->
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

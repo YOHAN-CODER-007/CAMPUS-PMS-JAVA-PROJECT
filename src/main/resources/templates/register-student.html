@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Registration - Campus PMS')}"></head>
+<body class="bg-body">
+
+<div class="auth-page">
+    <div class="auth-container" style="max-width: 1100px;">
+        <div class="row g-0">
+            <!-- Left Side: Gradient Banner -->
+            <div class="col-lg-4 d-none d-lg-block">
+                <div class="auth-banner">
+                    <div>
+                        <a th:href="@{/}" class="text-white text-decoration-none d-flex align-items-center gap-2 mb-4">
+                            <i class="bi bi-mortarboard-fill fs-2"></i>
+                            <span class="fs-4 fw-bold">Campus<span class="text-warning">PMS</span></span>
+                        </a>
+                        <h2 class="auth-banner-title mb-3">Launch Your Dream Career</h2>
+                        <p class="text-white-50">
+                            Create your verified student profile, upload your resume, match with top tech companies, and track your interview rounds in real time.
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-top border-white border-opacity-25">
+                        <div class="d-flex align-items-center gap-2 text-white-50 small mb-2">
+                            <i class="bi bi-check-circle-fill text-warning"></i>
+                            <span>Instant eligibility validation</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 text-white-50 small mb-2">
+                            <i class="bi bi-check-circle-fill text-warning"></i>
+                            <span>Live skill match analysis</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 text-white-50 small">
+                            <i class="bi bi-check-circle-fill text-warning"></i>
+                            <span>Peer interview insights</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Student Registration Form -->
+            <div class="col-lg-8">
+                <div class="auth-form-side p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Student Registration</h2>
+                            <p class="text-muted small">Fill in your academic and account details to get started</p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 theme-toggle-btn">
+                            <i class="bi bi-moon-stars-fill theme-toggle-icon"></i>
+                        </button>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+                    <form th:action="@{/register/student}" th:object="${studentDto}" method="post">
+                        <div class="row g-3">
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold small">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" id="name" th:field="*{name}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Alex Johnson" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="col-md-6">
+                                <label for="department" class="form-label fw-semibold small">Department <span class="text-danger">*</span></label>
+                                <select id="department" th:field="*{department}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('department')} ? 'is-invalid' : ''" required>
+                                    <option value="" disabled selected>Select Department</option>
+                                    <option value="Computer Science & Engineering">Computer Science & Engineering (CSE)</option>
+                                    <option value="Information Technology">Information Technology (IT)</option>
+                                    <option value="Electronics & Communication">Electronics & Communication (ECE)</option>
+                                    <option value="Electrical & Electronics">Electrical & Electronics (EEE)</option>
+                                    <option value="Mechanical Engineering">Mechanical Engineering (MECH)</option>
+                                    <option value="Civil Engineering">Civil Engineering (CIVIL)</option>
+                                    <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science (AI & DS)</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+                            </div>
+
+                            <!-- Account Login Email -->
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold small">Account Login Email <span class="text-danger">*</span></label>
+                                <input type="email" id="email" th:field="*{email}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. alex@gmail.com" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- College Official Email -->
+                            <div class="col-md-6">
+                                <label for="collegeEmail" class="form-label fw-semibold small">College Email ID <span class="text-danger">*</span></label>
+                                <input type="email" id="collegeEmail" th:field="*{collegeEmail}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('collegeEmail')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. alex.cs@college.edu" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('collegeEmail')}" th:errors="*{collegeEmail}"></div>
+                            </div>
+
+                            <!-- Contact Number -->
+                            <div class="col-md-4">
+                                <label for="contactNumber" class="form-label fw-semibold small">Contact Number (10 digits) <span class="text-danger">*</span></label>
+                                <input type="text" id="contactNumber" th:field="*{contactNumber}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('contactNumber')} ? 'is-invalid' : ''"
+                                       placeholder="9876543210" maxlength="10" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactNumber')}" th:errors="*{contactNumber}"></div>
+                            </div>
+
+                            <!-- CGPA -->
+                            <div class="col-md-4">
+                                <label for="cgpa" class="form-label fw-semibold small">Current CGPA (0.0 - 10.0) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" min="0" max="10" id="cgpa" th:field="*{cgpa}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('cgpa')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 8.45" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cgpa')}" th:errors="*{cgpa}"></div>
+                            </div>
+
+                            <!-- Passing Year -->
+                            <div class="col-md-4">
+                                <label for="passingYear" class="form-label fw-semibold small">Passing Year <span class="text-danger">*</span></label>
+                                <select id="passingYear" th:field="*{passingYear}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('passingYear')} ? 'is-invalid' : ''" required>
+                                    <option value="" disabled selected>Year</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('passingYear')}" th:errors="*{passingYear}"></div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label for="password" class="form-label fw-semibold small">Create Password <span class="text-danger">*</span></label>
+                                <input type="password" id="password" th:field="*{password}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                       placeholder="Min. 6 characters" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label fw-semibold small">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                                       placeholder="Re-enter password" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6 mt-4">
+                            <i class="bi bi-person-check-fill me-1"></i> Complete Student Registration
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <span class="text-muted small">Already registered?</span>
+                        <a th:href="@{/login}" class="small text-primary fw-semibold text-decoration-none ms-1">
+                            Sign in here
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

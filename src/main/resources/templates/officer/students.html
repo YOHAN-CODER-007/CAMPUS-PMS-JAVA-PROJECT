@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Students Directory - Placement Officer')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('students')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Students Directory')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Registered Students Directory</h3>
+                    <p class="text-muted small mb-0">Manage student profiles, review academic credentials, monitor placement status, and control access permissions.</p>
+                </div>
+            </div>
+
+            <div class="custom-card">
+                <div class="table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Student</th>
+                                <th>Department</th>
+                                <th>CGPA</th>
+                                <th>Arrears</th>
+                                <th>Grad Year</th>
+                                <th>Resume</th>
+                                <th>Placed</th>
+                                <th>Account</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(students)}">
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people fs-1 d-block mb-2 opacity-50"></i>
+                                    <span>No registered students found.</span>
+                                </td>
+                            </tr>
+                            <tr th:each="std : ${students}">
+                                <td class="ps-4">
+                                    <div class="fw-bold" th:text="${std.name}">Student Name</div>
+                                    <div class="small text-muted" th:text="${std.user.email}">student@email.com</div>
+                                </td>
+                                <td class="small" th:text="${std.department}">CSE</td>
+                                <td class="fw-bold" th:text="${std.cgpa}">8.5</td>
+                                <td>
+                                    <span th:if="${std.totalArrears == 0}" class="badge bg-success-subtle text-success">0</span>
+                                    <span th:if="${std.totalArrears > 0}" class="badge bg-danger-subtle text-danger" th:text="${std.totalArrears}">1</span>
+                                </td>
+                                <td th:text="${std.passingYear}">2026</td>
+                                <td>
+                                    <a th:if="${std.resumePath != null and !std.resumePath.isEmpty()}"
+                                       th:href="@{'/student/resume/' + ${std.resumePath}}" target="_blank"
+                                       class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF
+                                    </a>
+                                    <span th:if="${std.resumePath == null or std.resumePath.isEmpty()}" class="text-muted small">None</span>
+                                </td>
+                                <td>
+                                    <span th:if="${std.placed}" class="badge-status badge-placed">
+                                        <i class="bi bi-award-fill"></i> Placed
+                                    </span>
+                                    <span th:unless="${std.placed}" class="badge bg-light text-muted border">
+                                        Unplaced
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:if="${std.user.active}" class="badge bg-success-subtle text-success">Active</span>
+                                    <span th:unless="${std.user.active}" class="badge bg-danger-subtle text-danger">Blocked</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <form th:action="@{'/officer/students/' + ${std.id} + '/toggle-placed'}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm rounded-pill px-2 py-1"
+                                                    th:classappend="${std.placed} ? 'btn-outline-secondary' : 'btn-outline-success'"
+                                                    th:title="${std.placed} ? 'Set to Unplaced' : 'Mark as Placed'">
+                                                <i class="bi" th:classappend="${std.placed} ? 'bi-x-circle me-1' : 'bi-award-fill me-1'"></i>
+                                                <span th:text="${std.placed} ? 'Unmark' : 'Mark Placed'">Mark Placed</span>
+                                            </button>
+                                        </form>
+
+                                        <form th:action="@{'/officer/students/' + ${std.id} + '/toggle-status'}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm rounded-pill px-2 py-1"
+                                                    th:classappend="${std.user.active} ? 'btn-outline-warning' : 'btn-outline-success'"
+                                                    th:title="${std.user.active} ? 'Deactivate Student Account' : 'Activate Student Account'">
+                                                <i class="bi" th:classappend="${std.user.active} ? 'bi-slash-circle me-1' : 'bi-check-circle me-1'"></i>
+                                                <span th:text="${std.user.active} ? 'Block' : 'Unblock'">Block</span>
+                                            </button>
+                                        </form>
+
+                                        <form th:action="@{'/officer/students/' + ${std.id} + '/delete'}" method="post" class="d-inline"
+                                              th:data-student-name="${std.name}"
+                                              onsubmit="return confirm('Are you sure you want to permanently remove student \'' + this.getAttribute('data-student-name') + '\'? All associated records and applications will be erased.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1"
+                                                    title="Permanently Remove Student">
+                                                <i class="bi bi-trash3 me-1"></i> Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Reports & Exports - Placement Officer')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('reports')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Placement Reports & Exports')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Official Placement Reports</h3>
+                    <p class="text-muted small mb-0">Generate institutional recruitment summaries, audit applications, and export placed candidate rosters.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Export Placed Students CSV -->
+                <div class="col-md-6">
+                    <div class="custom-card p-4 h-100 border-start border-4 border-success">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="stat-icon success">
+                                <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Placed Students Roster</h5>
+                                <div class="text-muted small"><span th:text="${placedStudents}">0</span> Placed Candidates</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-4">
+                            Download the verified CSV roster of all placed students containing student names, department, college email, contact number, and hiring company.
+                        </p>
+                        <a th:href="@{/officer/reports/export/placed}" class="btn btn-outline-success rounded-pill px-4">
+                            <i class="bi bi-download me-1"></i> Export Placed Students (CSV)
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Export All Applications CSV -->
+                <div class="col-md-6">
+                    <div class="custom-card p-4 h-100 border-start border-4 border-primary">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="stat-icon primary">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">All Applications Master Log</h5>
+                                <div class="text-muted small"><span th:text="${totalApplications}">0</span> Total Applications</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-4">
+                            Export complete recruitment drive audit logs including candidate details, job titles, companies, application status, and scheduled interview dates.
+                        </p>
+                        <a th:href="@{/officer/reports/export/applications}" class="btn btn-outline-primary rounded-pill px-4">
+                            <i class="bi bi-download me-1"></i> Export All Applications (CSV)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

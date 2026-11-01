@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Company Profile - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <!-- Sidebar Fragment -->
+    <aside th:replace="~{fragments/layout :: sidebar('profile')}"></aside>
+
+    <div class="app-main">
+        <!-- Top Navbar Fragment -->
+        <header th:replace="~{fragments/layout :: navbar('Company Profile')}"></header>
+
+        <!-- Main Content Area -->
+        <main class="app-content">
+            <!-- Flash Alerts -->
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Profile Card -->
+            <div class="custom-card">
+                <div class="card-header-clean">
+                    <h5><i class="bi bi-building-gear text-primary me-2"></i>Recruiter Organization Details</h5>
+                    <span class="badge bg-success px-3 py-2">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Recruiting Partner
+                    </span>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <form th:action="@{/company/profile}" th:object="${company}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row g-4">
+                            <!-- Company Name -->
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold small">Company Name <span class="text-danger">*</span></label>
+                                <input type="text" id="name" th:field="*{name}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Headquarters / Location -->
+                            <div class="col-md-6">
+                                <label for="location" class="form-label fw-semibold small">Headquarters / Location <span class="text-danger">*</span></label>
+                                <input type="text" id="location" th:field="*{location}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+                            </div>
+
+                            <!-- Contact Email -->
+                            <div class="col-md-6">
+                                <label for="contactEmail" class="form-label fw-semibold small">Official HR Contact Email <span class="text-danger">*</span></label>
+                                <input type="email" id="contactEmail" th:field="*{contactEmail}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('contactEmail')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}"></div>
+                            </div>
+
+                            <!-- Contact Phone -->
+                            <div class="col-md-6">
+                                <label for="contactNumber" class="form-label fw-semibold small">Contact Phone Number <span class="text-danger">*</span></label>
+                                <input type="text" id="contactNumber" th:field="*{contactNumber}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('contactNumber')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactNumber')}" th:errors="*{contactNumber}"></div>
+                            </div>
+
+                            <!-- Website -->
+                            <div class="col-md-12">
+                                <label for="website" class="form-label fw-semibold small">Company Website URL</label>
+                                <input type="url" id="website" th:field="*{website}" class="form-control"
+                                       placeholder="https://example.com">
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-semibold small">About Company & Industry Focus</label>
+                                <textarea id="description" th:field="*{description}" class="form-control" rows="4"
+                                          placeholder="Describe your tech stack, domains, work culture, and hiring philosophy..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-3">
+                            <a th:href="@{/company/dashboard}" class="btn btn-light border px-4 py-2 rounded-pill">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4 py-2 rounded-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i> Update Company Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer Fragment -->
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

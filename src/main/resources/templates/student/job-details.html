@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${job.title} + ' - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('jobs')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Job Opening Details')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Back navigation & Save button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a th:href="@{/student/jobs}" class="btn btn-sm btn-light border rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Back to All Drives
+                </a>
+
+                <form th:action="@{'/student/jobs/' + ${job.id} + '/toggle-save'}" method="post">
+                    <input type="hidden" name="redirect" value="details">
+                    <button type="submit" class="btn btn-sm rounded-pill px-3"
+                            th:classappend="${isSaved} ? 'btn-warning text-dark' : 'btn-outline-warning'">
+                        <i class="bi" th:classappend="${isSaved} ? 'bi-star-fill me-1' : 'bi-star me-1'"></i>
+                        <span th:text="${isSaved} ? 'Bookmarked' : 'Save Job'">Save Job</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left: Job Details -->
+                <div class="col-lg-8">
+                    <div class="custom-card p-4 p-md-5 mb-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                            <div>
+                                <h2 class="fw-bold mb-1" th:text="${job.title}">Senior Software Engineer</h2>
+                                <h5 class="text-primary fw-semibold mb-0">
+                                    <i class="bi bi-building me-1"></i> <span th:text="${job.company.name}">Acme Technologies</span>
+                                </h5>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fs-6"
+                                  th:text="${job.jobType.displayName}">Full Time</span>
+                        </div>
+
+                        <!-- Highlights Banner -->
+                        <div class="row g-3 p-3 my-3 rounded-4 bg-body-tertiary">
+                            <div class="col-6 col-md-3">
+                                <span class="small text-muted d-block" style="font-size: 0.72rem;">ANNUAL PACKAGE</span>
+                                <h4 class="fw-bold text-primary mb-0" th:text="${job.packageLpa + ' LPA'}">14.0 LPA</h4>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="small text-muted d-block" style="font-size: 0.72rem;">LOCATION</span>
+                                <h5 class="fw-semibold mb-0" th:text="${job.location}">Bangalore</h5>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="small text-muted d-block" style="font-size: 0.72rem;">VACANCIES</span>
+                                <h5 class="fw-semibold mb-0" th:text="${job.vacancies + ' Openings'}">5 Openings</h5>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="small text-muted d-block" style="font-size: 0.72rem;">DEADLINE</span>
+                                <h5 class="fw-semibold text-danger mb-0" th:text="${#temporals.format(job.deadline, 'dd MMM yyyy')}">30 Nov 2026</h5>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <h5 class="fw-bold border-bottom pb-2">Role Overview & Responsibilities</h5>
+                            <p class="text-muted" style="white-space: pre-line; line-height: 1.7;" th:text="${job.description}">
+                                Full role details...
+                            </p>
+                        </div>
+
+                        <!-- Required Skills -->
+                        <div class="mt-4">
+                            <h5 class="fw-bold border-bottom pb-2">Required Technical Skills</h5>
+                            <div class="d-flex flex-wrap gap-2 pt-2">
+                                <span th:each="sk : ${job.requiredSkillsList}" class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                                    <i class="bi bi-check2 text-primary me-1"></i> <span th:text="${sk}">Java</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Company Profile Summary -->
+                        <div class="mt-4 pt-3 border-top">
+                            <h6 class="fw-bold text-muted text-uppercase" style="font-size: 0.78rem;">About the Hiring Company</h6>
+                            <p class="small text-muted mb-2" th:text="${job.company.description}">About company</p>
+                            <a th:if="${job.company.website != null and !job.company.website.isEmpty()}"
+                               th:href="${job.company.website}" target="_blank" class="small text-primary text-decoration-none">
+                                <i class="bi bi-box-arrow-up-right me-1"></i> Visit Company Website
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Auto Eligibility Check & Action -->
+                <div class="col-lg-4">
+                    <!-- Automated Eligibility Check Card -->
+                    <div class="custom-card p-4 mb-4 border-2"
+                         th:classappend="${eligibility.canApply} ? 'border-success' : 'border-danger'">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div class="rounded-circle p-2 d-flex align-items-center justify-content-center"
+                                 th:classappend="${eligibility.canApply} ? 'bg-success text-white' : 'bg-danger text-white'"
+                                 style="width: 36px; height: 36px;">
+                                <i class="bi" th:classappend="${eligibility.canApply} ? 'bi-check-lg' : 'bi-exclamation-triangle-fill'"></i>
+                            </div>
+                            <h5 class="fw-bold m-0" th:text="${eligibility.canApply} ? 'Eligible to Apply' : 'Not Eligible to Apply'">Eligibility Status</h5>
+                        </div>
+
+                        <!-- Skill Match % -->
+                        <div class="p-3 rounded-3 bg-body-tertiary mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small fw-semibold">Skill Match Percentage</span>
+                                <span class="small fw-bold"
+                                      th:classappend="${eligibility.skillMatchPercentage >= 70} ? 'text-success' : (${eligibility.skillMatchPercentage >= 40} ? 'text-warning' : 'text-danger')"
+                                      th:text="${eligibility.skillMatchPercentage + '%'}">75%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar"
+                                     th:classappend="${eligibility.skillMatchPercentage >= 70} ? 'bg-success' : (${eligibility.skillMatchPercentage >= 40} ? 'bg-warning' : 'bg-danger')"
+                                     th:style="'width: ' + ${eligibility.skillMatchPercentage} + '%'"></div>
+                            </div>
+
+                            <div th:if="${not #lists.isEmpty(eligibility.missingSkills)}" class="mt-2 pt-2 border-top">
+                                <span class="small text-danger fw-semibold d-block" style="font-size: 0.72rem;">MISSING SKILLS:</span>
+                                <div class="small text-muted" th:text="${#strings.listJoin(eligibility.missingSkills, ', ')}">Docker, AWS</div>
+                            </div>
+                        </div>
+
+                        <!-- Criteria Checklist -->
+                        <div class="mb-4">
+                            <span class="small fw-bold text-uppercase text-muted d-block mb-2" style="font-size: 0.72rem;">Criteria Validation:</span>
+                            <ul class="list-unstyled d-flex flex-column gap-2 small mb-0">
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <span class="text-muted">Minimum CGPA: <strong th:text="${job.minCgpa}">6.5</strong></span>
+                                    <i class="bi" th:classappend="${profile != null and profile.cgpa >= job.minCgpa} ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
+                                </li>
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <span class="text-muted">Max Arrears: <strong th:text="${job.maxArrearsAllowed}">0</strong></span>
+                                    <i class="bi" th:classappend="${profile != null and profile.totalArrears <= job.maxArrearsAllowed} ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
+                                </li>
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <span class="text-muted">Passing Year: <strong th:text="${job.eligiblePassingYear}">2026</strong></span>
+                                    <i class="bi" th:classappend="${profile != null and profile.passingYear == job.eligiblePassingYear} ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
+                                </li>
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <span class="text-muted">Profile Complete (100%):</span>
+                                    <i class="bi" th:classappend="${profile != null and profile.profileCompleteness == 100} ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Disqualification Reasons if not eligible -->
+                        <div th:if="${not #lists.isEmpty(eligibility.failureReasons)}" class="alert alert-danger p-3 rounded-3 small mb-3">
+                            <strong class="d-block mb-1"><i class="bi bi-x-octagon-fill me-1"></i> Reasons:</strong>
+                            <ul class="mb-0 ps-3">
+                                <li th:each="reason : ${eligibility.failureReasons}" th:text="${reason}">Failed reason</li>
+                            </ul>
+                        </div>
+
+                        <!-- Apply Button / Disabled State -->
+                        <div>
+                            <form th:if="${eligibility.canApply}" th:action="@{'/student/jobs/' + ${job.id} + '/apply'}" method="post">
+                                <button type="submit" class="btn btn-success btn-lg w-100 py-3 rounded-pill fw-bold shadow-sm">
+                                    <i class="bi bi-send-check-fill me-1"></i> Apply for this Drive
+                                </button>
+                            </form>
+
+                            <button th:unless="${eligibility.canApply}" type="button" class="btn btn-secondary btn-lg w-100 py-3 rounded-pill fw-bold" disabled>
+                                <span th:if="${alreadyApplied}"><i class="bi bi-check2-circle me-1"></i> Already Applied</span>
+                                <span th:if="${eligibility.alreadyPlaced}"><i class="bi bi-award-fill me-1"></i> Already Placed</span>
+                                <span th:if="${eligibility.deadlinePassed}"><i class="bi bi-clock-history me-1"></i> Deadline Passed</span>
+                                <span th:if="${eligibility.profileIncomplete}"><i class="bi bi-exclamation-circle me-1"></i> Complete Profile to Apply</span>
+                                <span th:if="${!eligibility.eligible and !alreadyApplied and !eligibility.alreadyPlaced and !eligibility.deadlinePassed and !eligibility.profileIncomplete}">
+                                    <i class="bi bi-slash-circle me-1"></i> Not Eligible
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

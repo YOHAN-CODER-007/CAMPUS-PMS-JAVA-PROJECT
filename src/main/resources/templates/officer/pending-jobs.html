@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Job Approvals - Officer Portal')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('pending-jobs')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Pending Job Postings')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Job Postings Awaiting Verification</h3>
+                    <p class="text-muted small mb-0">Validate package details, eligible criteria, and job descriptions before making drives live to students.</p>
+                </div>
+            </div>
+
+            <div class="custom-card">
+                <div class="table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Job Title & Company</th>
+                                <th>Type</th>
+                                <th>Package (LPA)</th>
+                                <th>Min CGPA</th>
+                                <th>Eligible Depts</th>
+                                <th>Deadline</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(jobs)}">
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-patch-check fs-1 text-success d-block mb-2 opacity-50"></i>
+                                    <span>All job postings have been verified! No pending postings.</span>
+                                </td>
+                            </tr>
+                            <tr th:each="job : ${jobs}">
+                                <td class="ps-4">
+                                    <div class="fw-bold" th:text="${job.title}">Software Engineer</div>
+                                    <div class="small text-muted" th:text="${job.company.name}">Company Name</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary" th:text="${job.jobType.displayName}">Full Time</span>
+                                </td>
+                                <td class="fw-bold text-primary" th:text="${job.packageLpa + ' LPA'}">12.0 LPA</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:text="${job.minCgpa}">6.5</span>
+                                </td>
+                                <td>
+                                    <span class="small text-muted" th:text="${job.eligibleDepartments}">CSE, IT</span>
+                                </td>
+                                <td class="small" th:text="${#temporals.format(job.deadline, 'dd MMM yyyy')}">30 Nov 2026</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <!-- Approve Form -->
+                                        <form th:action="@{'/officer/approvals/jobs/' + ${job.id} + '/approve'}" method="post">
+                                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                                                <i class="bi bi-check-lg me-1"></i> Approve
+                                            </button>
+                                        </form>
+
+                                        <!-- Reject Trigger Button for Confirmation Modal -->
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                data-bs-toggle="modal" th:data-bs-target="'#rejectJobModal' + ${job.id}">
+                                            <i class="bi bi-x-lg me-1"></i> Reject
+                                        </button>
+                                    </div>
+
+                                    <!-- Confirmation Modal for Reject -->
+                                    <div class="modal fade" th:id="'rejectJobModal' + ${job.id}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0 shadow">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title fw-bold text-danger">Confirm Job Rejection</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body py-4 text-start">
+                                                    <p class="mb-0">
+                                                        Are you sure you want to reject the job posting for
+                                                        <strong th:text="${job.title}">Job</strong> by <strong th:text="${job.company.name}">Company</strong>?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer border-0 pt-0">
+                                                    <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                                                    <form th:action="@{'/officer/approvals/jobs/' + ${job.id} + '/reject'}" method="post">
+                                                        <button type="submit" class="btn btn-danger rounded-pill px-4">
+                                                            Yes, Reject Job
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Manage Job Postings - Campus PMS')}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar-backdrop"></div>
+    <aside th:replace="~{fragments/layout :: sidebar('manage-jobs')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: navbar('Manage Job Openings')}"></header>
+
+        <main class="app-content">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Company Job Postings</h3>
+                    <p class="text-muted small mb-0">Track verification status, candidate applications, and requirements for all your recruitment drives.</p>
+                </div>
+                <a th:href="@{/company/jobs/create}" class="btn btn-primary-custom px-4 py-2">
+                    <i class="bi bi-plus-circle-fill me-1"></i> Post New Job Opening
+                </a>
+            </div>
+
+            <div class="custom-card">
+                <div class="table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Job Title</th>
+                                <th>Type</th>
+                                <th>Package (LPA)</th>
+                                <th>Vacancies</th>
+                                <th>Min CGPA</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(jobs)}">
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                    <span>No job openings found. Click "Post New Job Opening" to create your first recruitment drive.</span>
+                                </td>
+                            </tr>
+                            <tr th:each="job : ${jobs}">
+                                <td class="ps-4">
+                                    <div class="fw-bold" th:text="${job.title}">Senior Software Engineer</div>
+                                    <div class="small text-muted" th:text="${job.location}">Bangalore</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary" th:text="${job.jobType.displayName}">Full Time</span>
+                                </td>
+                                <td class="fw-bold text-primary" th:text="${job.packageLpa + ' LPA'}">14.0 LPA</td>
+                                <td th:text="${job.vacancies}">5</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:text="${job.minCgpa}">7.0</span>
+                                </td>
+                                <td class="small" th:text="${#temporals.format(job.deadline, 'dd MMM yyyy')}">15 Dec 2026</td>
+                                <td>
+                                    <span th:if="${job.effectiveStatus.name() == 'APPROVED'}" class="badge-status badge-approved">
+                                        <i class="bi bi-check-circle-fill"></i> Approved
+                                    </span>
+                                    <span th:if="${job.effectiveStatus.name() == 'PENDING'}" class="badge-status badge-pending">
+                                        <i class="bi bi-clock-history"></i> Pending
+                                    </span>
+                                    <span th:if="${job.effectiveStatus.name() == 'REJECTED'}" class="badge-status badge-rejected">
+                                        <i class="bi bi-x-circle-fill"></i> Rejected
+                                    </span>
+                                    <span th:if="${job.effectiveStatus.name() == 'CLOSED'}" class="badge-status badge-closed">
+                                        <i class="bi bi-lock-fill"></i> Closed
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <a th:href="@{'/company/jobs/' + ${job.id} + '/applicants'}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            <i class="bi bi-people-fill me-1"></i> Applicants
+                                        </a>
+                                        <form th:action="@{'/company/jobs/' + ${job.id} + '/delete'}" method="post" class="d-inline"
+                                              th:data-job-title="${job.title}"
+                                              onsubmit="return confirm('Are you sure you want to remove the job opening \'' + this.getAttribute('data-job-title') + '\'? All applications and bookmarks for this job will also be removed.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Remove Job Posting">
+                                                <i class="bi bi-trash3 me-1"></i> Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/layout :: footer}"></footer>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
